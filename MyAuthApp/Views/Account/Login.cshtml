@@ -1,0 +1,64 @@
+@model LoginViewModel
+
+@{
+    Layout = "_Layout";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+<script>
+    window.onload = function() {
+        var message = @Html.Raw(Json.Serialize(TempData["SuccessMessage"]));
+        if (message) {
+            alert(message);
+            window.location.href = '@Url.Action("Login", "Account")'; // 註冊成功後跳轉登入頁
+        }
+    };
+</script>
+
+
+}
+
+<h2>登入</h2>
+
+<form asp-action="Login" method="post">
+    <div>
+        <label asp-for="Email"></label>
+        <input asp-for="Email" />
+        <span asp-validation-for="Email"></span>
+    </div>
+
+    <div>
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" />
+        <span asp-validation-for="Password"></span>
+    </div>
+
+    <div>
+        <label asp-for="RememberMe"></label>
+        <input asp-for="RememberMe" />
+    </div>
+
+    <button type="submit">登入</button>
+</form>
+
+<p>尚未註冊? <a asp-action="Register">註冊</a></p>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
