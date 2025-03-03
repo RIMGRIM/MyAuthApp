@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\MyAuthApp.props" />
+</Project>
