@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 public class AccountController : Controller
 {
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
-    public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -24,7 +24,14 @@ public class AccountController : Controller
     {
         if (ModelState.IsValid)
         {
-            var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+            var user = new ApplicationUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                PhoneNumber = model.Phone,
+                Role = "User" // 預設角色為 User
+            };
+
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
@@ -68,4 +75,21 @@ public class AccountController : Controller
         await _signInManager.SignOutAsync();
         return RedirectToAction("Login", "Account");
     }
+
+    public async Task<IActionResult> AssignRole(string userEmail, string role)
+{
+    var user = await _userManager.FindByEmailAsync(userEmail);
+    if (user == null)
+    {
+        return NotFound("使用者不存在");
+    }
+
+    if (!await _userManager.IsInRoleAsync(user, role))
+    {
+        await _userManager.AddToRoleAsync(user, role);
+    }
+
+    return Ok($"已將 {userEmail} 設為 {role} 角色");
+}
+
 }

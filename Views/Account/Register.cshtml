@@ -39,6 +39,14 @@
         <span asp-validation-for="ConfirmPassword"></span>
     </div>
 
+    <!-- ✅ 新增手機號碼輸入框 -->
+    <div>
+        <label asp-for="Phone"></label>
+        <input asp-for="Phone" minlength="10" maxlength="15" pattern="[0-9]+" title="請輸入 10 到 15 位數的手機號碼"/>
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+
     <button type="submit">註冊</button>
 </form>
 

@@ -137,6 +137,7 @@ C:\Users\andydoong\MyAuthApp\obj\Debug\net9.0\MyAuthApp.csproj.CoreCompileInputs
 C:\Users\andydoong\MyAuthApp\obj\Debug\net9.0\MyAuthApp.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\andydoong\MyAuthApp\obj\Debug\net9.0\MyAuthApp.RazorAssemblyInfo.cache
 C:\Users\andydoong\MyAuthApp\obj\Debug\net9.0\MyAuthApp.RazorAssemblyInfo.cs
+C:\Users\andydoong\MyAuthApp\obj\Debug\net9.0\MyAuthApp.sourcelink.json
 C:\Users\andydoong\MyAuthApp\obj\Debug\net9.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\andydoong\MyAuthApp\obj\Debug\net9.0\scopedcss\bundle\MyAuthApp.styles.css
 C:\Users\andydoong\MyAuthApp\obj\Debug\net9.0\scopedcss\projectbundle\MyAuthApp.bundle.scp.css
