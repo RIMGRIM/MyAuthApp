@@ -1,0 +1,54 @@
+@model ApplicationUser
+
+@{
+    Layout = "~/Areas/Management/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewData["Title"] = "編輯帳號";
+}
+
+<h2>編輯帳號</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Email">電子郵件</label>
+        <input asp-for="Email" class="form-control" required />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PhoneNumber">手機號碼</label>
+        <input asp-for="PhoneNumber" class="form-control" required />
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Role">角色</label>
+        <select asp-for="Role" class="form-control">
+            <option value="User">User</option>
+            <option value="Admin">Admin</option>
+        </select>
+        <span asp-validation-for="Role" class="text-danger"></span>
+    </div>
+    </br>
+    <button type="submit" class="btn btn-primary">儲存變更</button>
+    <a href="@Url.Action("Index", "User", new { area = "Management" })" class="btn btn-secondary">取消</a>
+</form>

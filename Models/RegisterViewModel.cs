@@ -23,5 +23,5 @@ public class RegisterViewModel
     [Phone]
     [StringLength(15, MinimumLength = 10, ErrorMessage = "手機號碼必須介於 10 到 15 位數")]
     [Display(Name = "手機號碼")]
-    public required string Phone { get; set; }
+    public string Phone { get; set; }
 }

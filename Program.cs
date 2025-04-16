@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllersWithViews();
+
 // 加入資料庫連線設定
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -17,7 +19,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
 
-    // 設定密碼規則，去除強制大小寫和符號
+    // 設定密碼規則
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = false;
     options.Password.RequireUppercase = false;
@@ -30,12 +32,27 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.Configure<IdentityOptions>(options =>
+builder.Services.AddSession(options =>
 {
-    options.User.RequireUniqueEmail = true; // 確保 Email 唯一
-    options.SignIn.RequireConfirmedAccount = false;
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+    options.SlidingExpiration = true;  // 讓使用者持續操作時不會被強制登出
+});
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedAccount = false;
+});
 
 var app = builder.Build();
 
@@ -49,10 +66,10 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-
-// 確保身份驗證啟用
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
+app.UseSession();
 
 // 確保 Admin 帳號存在
 using (var scope = app.Services.CreateScope())
@@ -63,25 +80,45 @@ using (var scope = app.Services.CreateScope())
     await CreateAdminAccount(userManager, roleManager);
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    string[] roles = new[] { "User", "Admin" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
+
+// 設定 `Areas` 路由
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=User}/{action=Index}/{id?}"
+);
+
+// 設定預設路由
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}"
+);
 
 app.Run();
 
-// 新增 Admin 帳號的方法
+// 確保 Admin 帳號存在的方法
 async Task CreateAdminAccount(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
 {
     string adminEmail = "admin@gmail.com";
-    string adminPassword = "Admin123"; // 至少6碼，包含數字，符合規則
+    string adminPassword = "Admin123";
 
-    // 確保 Admin 角色存在
     if (!await roleManager.RoleExistsAsync("Admin"))
     {
         await roleManager.CreateAsync(new IdentityRole("Admin"));
     }
 
-    // 檢查是否已有 Admin 帳號
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
     if (adminUser == null)
     {

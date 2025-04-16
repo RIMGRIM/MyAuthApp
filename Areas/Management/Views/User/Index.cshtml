@@ -1,0 +1,64 @@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+
+
+@model List<ApplicationUser>
+@{ Layout = "~/Areas/Management/Views/Shared/_Layout.cshtml"; }
+
+
+<h2>所有帳號</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>PhoneNumber</th>
+            <th>Role</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@user.PhoneNumber</td>
+                <td>@user.Role</td>
+                <td>
+                    <a href="@Url.Action("Details", "User", new { id = user.Id, area = "Management" })">查看</a> |
+                    <a href="@Url.Action("Edit", "User", new { id = user.Id, area = "Management" })">編輯</a> |
+                    <form asp-action="Delete" asp-controller="User" asp-area="Management" method="post" 
+                        onsubmit="return confirm('確定要刪除嗎？');" style="display:inline;">
+                        @Html.AntiForgeryToken() <!-- 防止 CSRF 攻擊 -->
+                        <input type="hidden" name="id" value="@user.Id" />
+                        <button type="submit" class="btn btn-danger btn-sm">刪除</button>
+                    </form>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- 分頁控制 -->
+@if (ViewBag.TotalPages > 1)
+{
+    <div>
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <a href="@Url.Action("Index", new { page = i })" class="@(i == ViewBag.CurrentPage ? "active" : "")">
+                @i
+            </a>
+        }
+    </div>
+}

@@ -1,0 +1,25 @@
+@model ApplicationUser
+
+@{
+    ViewData["Title"] = "帳號詳細資訊";
+    Layout = "~/Areas/Management/Views/Shared/_Layout.cshtml"; // 直接指定 Layout
+}
+
+
+<table class="table">
+    <tr>
+        <th>電子郵件</th>
+        <td>@Model.Email</td>
+    </tr>
+    <tr>
+        <th>手機號碼</th>
+        <td>@Model.PhoneNumber</td>
+    </tr>
+    <tr>
+        <th>角色</th>
+        <td>@Model.Role</td>
+    </tr>
+</table>
+
+<a href="@Url.Action("Edit", "User", new { id = Model.Id, area = "Management" })" class="btn btn-primary">編輯</a>
+<a href="@Url.Action("Index", "User", new { area = "Management" })" class="btn btn-secondary">返回列表</a>
